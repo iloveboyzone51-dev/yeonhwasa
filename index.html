@@ -330,63 +330,87 @@
         </button>
       </div>
 
-      <!-- 신규/상세 커스터마이징 가입 폼 카드 -->
+      <!-- 신규/상세 커스터마이징 가입 폼 카드 (2단계 챕터 분리) -->
       <div id="full-login-card" class="login-card" style="position:relative;">
         <button type="button" class="btn-cancel-login-overlay" title="취소하고 도량으로 돌아가기">✕ 닫기</button>
-        <div class="login-card-header">
-          <div class="lotus-emblem">🪷</div>
-          <h2>나만의 불자 캐릭터 만들기</h2>
-          <p>얼굴 표정, 머리 스타일, 법복 색상을 선택하면 <strong>실시간 미리보기</strong>와 함께 도량에 나만의 캐릭터로 입장합니다.</p>
-        </div>
 
-        <!-- [개선 3] 게임 스타일 캐릭터 실시간 미리보기 미니 캔버스 -->
-        <div class="custom-avatar-preview-box">
-          <canvas id="character-preview-canvas" width="120" height="120"></canvas>
-          <div class="preview-caption">실시간 내 캐릭터 미리보기</div>
-        </div>
+        <form id="login-form" novalidate>
+          <!-- [챕터 1] 이름 및 간편 비밀번호 4자리 입력 -->
+          <div id="char-step-1" class="char-step-panel">
+            <div class="login-card-header">
+              <div class="lotus-emblem">🪷</div>
+              <h2>가족 확인 및 입장 (1단계)</h2>
+              <p>성함(호칭)과 4자리 비밀번호를 입력해 주세요.</p>
+            </div>
 
-        <div id="existing-family-chips" class="existing-family-chips"></div>
+            <div id="existing-family-chips" class="existing-family-chips"></div>
 
-        <form id="login-form">
-          <div class="form-group">
-            <label for="login-name">이름 또는 가족 호칭 (예: 어머니, 아버지, 큰딸, 지수)</label>
-            <input type="text" id="login-name" placeholder="이름을 입력해 주세요" required maxlength="12" />
+            <div class="form-group">
+              <label for="login-name">이름 또는 가족 호칭 (예: 어머니, 아버지, 큰딸, 지수)</label>
+              <input type="text" id="login-name" placeholder="이름을 입력해 주세요" required maxlength="12" />
+            </div>
+
+            <div class="form-group">
+              <label for="login-pin">간편 비밀번호 숫자 4자리</label>
+              <input
+                type="password"
+                id="login-pin"
+                inputmode="numeric"
+                pattern="\d{4}"
+                maxlength="4"
+                placeholder="숫자 4자리 입력 (예: 1234)"
+                required
+              />
+            </div>
+
+            <div id="login-error-msg" class="login-error"></div>
+
+            <button type="button" id="btn-to-step-2" class="btn-login-submit" style="margin-top:14px;">
+              다음: 나만의 캐릭터 꾸미기 (2/2) 👉
+            </button>
           </div>
 
-          <div class="form-group">
-            <label for="login-pin">간편 비밀번호 숫자 4자리</label>
-            <input
-              type="password"
-              id="login-pin"
-              inputmode="numeric"
-              pattern="\d{4}"
-              maxlength="4"
-              placeholder="숫자 4자리 입력 (예: 1234)"
-              required
-            />
+          <!-- [챕터 2] 나만의 불자 캐릭터 꾸미기 (상단 미리보기 고정!) -->
+          <div id="char-step-2" class="char-step-panel" style="display:none;">
+            <div class="login-card-header compact">
+              <h2>나만의 불자 캐릭터 꾸미기 (2단계)</h2>
+              <p>원하는 모습을 선택하시면 상단 캐릭터가 실시간으로 바뀝니다.</p>
+            </div>
+
+            <!-- 상단 고정 실시간 캐릭터 미리보기 캔버스 -->
+            <div class="custom-avatar-preview-box sticky-preview">
+              <canvas id="character-preview-canvas" width="120" height="120"></canvas>
+              <div class="preview-caption" id="preview-user-name-label">실시간 내 캐릭터 미리보기</div>
+            </div>
+
+            <!-- 스크롤 가능한 선택 영역 -->
+            <div class="char-options-scroll-dock">
+              <!-- 연령대 선택 -->
+              <div class="custom-section-title">1. 연령대 선택</div>
+              <div class="age-group-grid" id="age-group-selector"></div>
+
+              <!-- 얼굴 표정 4종 선택 -->
+              <div class="custom-section-title">2. 얼굴 표정 선택 (4종)</div>
+              <div class="face-style-grid" id="face-style-selector"></div>
+
+              <!-- 10종 헤어스타일 선택 -->
+              <div class="custom-section-title">3. 헤어스타일 선택 (10종)</div>
+              <div class="hair-style-grid" id="hair-style-selector"></div>
+
+              <!-- 5종 법복/한복 의상 컬러 선택 -->
+              <div class="custom-section-title">4. 법복 / 한복 색상 (5종)</div>
+              <div class="outfit-color-grid" id="outfit-color-selector"></div>
+            </div>
+
+            <div class="step-buttons-row">
+              <button type="button" id="btn-back-to-step-1" class="btn-sub-step">
+                👈 이전 (이름 수정)
+              </button>
+              <button type="submit" class="btn-login-submit" style="flex:2; margin:0;">
+                🙏 캐릭터 완성하고 마음산사 들어가기
+              </button>
+            </div>
           </div>
-
-          <!-- 연령대 선택 -->
-          <div class="custom-section-title">1. 연령대 선택</div>
-          <div class="age-group-grid" id="age-group-selector"></div>
-
-          <!-- [개선 3] 얼굴 표정 4종 선택 -->
-          <div class="custom-section-title">2. 얼굴 표정 선택 (4종)</div>
-          <div class="face-style-grid" id="face-style-selector"></div>
-
-          <!-- 10종 헤어스타일 선택 -->
-          <div class="custom-section-title">3. 헤어스타일 선택 (10종)</div>
-          <div class="hair-style-grid" id="hair-style-selector"></div>
-
-          <!-- 5종 법복/한복 의상 컬러 선택 -->
-          <div class="custom-section-title">4. 법복 / 한복 색상 (5종)</div>
-          <div class="outfit-color-grid" id="outfit-color-selector"></div>
-
-          <div id="login-error-msg" class="login-error"></div>
-
-          <button type="submit" class="btn-login-submit">
-            🙏 캐릭터 저장하고 마음산사 들어가기
-          </button>
         </form>
       </div>
     </div>

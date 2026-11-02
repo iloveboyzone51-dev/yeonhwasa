@@ -437,10 +437,10 @@ class TempleGraphicsEngine {
 
     // 행동별 이동 및 모션 업데이트
     if (this.monkState.action === "patrolling") {
-      // 경내를 좌우로 천천히 산책/시찰
-      this.monkState.x += this.monkState.walkDir * 12 * dt;
-      if (this.monkState.x > 310) this.monkState.walkDir = -1;
-      if (this.monkState.x < 230) this.monkState.walkDir = 1;
+      // 경내를 좌우로 천천히 산책/시찰 (상대적 오프셋 왕복)
+      this.monkState.walkOffset = (this.monkState.walkOffset || 0) + this.monkState.walkDir * 12 * dt;
+      if (this.monkState.walkOffset > 22) this.monkState.walkDir = -1;
+      if (this.monkState.walkOffset < -22) this.monkState.walkDir = 1;
     } else if (this.monkState.action === "sweeping") {
       // 빗자루 쓸기 각도 왕복
       this.monkState.sweepAngle = Math.sin(this.elapsed * 3.5) * 0.35;
@@ -604,18 +604,18 @@ class TempleGraphicsEngine {
 
     if (level >= 2) {
       // [개선 4] 삼층석탑 위치를 앞마당 우측으로 배치하여 삼성각과 완벽 분리
-      this.drawPagoda(ctx, w * 0.72, h * 0.67, level >= 5);
+      this.drawPagoda(ctx, w * 0.74, h * 0.67, level >= 5);
     }
 
     if (level >= 4) {
-      this.drawLotusPond(ctx, w * 0.25, h * 0.82);
+      this.drawLotusPond(ctx, w * 0.25, h * 0.84);
     }
 
-    // [개선 1] 주지스님의 다채로운 산사 일과 렌더링
+    // [개선 1] 주지스님의 다채로운 산사 일과 렌더링 (좌측 마당)
     this.drawDiverseMonkActions(ctx, w, h);
 
-    // [개선 3] 커스터마이징 내 캐릭터 렌더링
-    this.drawCourtyardMyCustomCharacter(ctx, w * 0.44, h * 0.77);
+    // [개선 3] 커스터마이징 내 캐릭터 렌더링 (중앙 마당)
+    this.drawCourtyardMyCustomCharacter(ctx, w * 0.50, h * 0.76);
 
     if (weather === "fog" || timeOfDay === "dawn") {
       this.drawFogLayers(ctx, w, h, 0.95);
@@ -631,6 +631,12 @@ class TempleGraphicsEngine {
    */
   drawDiverseMonkActions(ctx, w, h) {
     ctx.save();
+
+    // [화면 최적화] 모바일 세로 화면에서도 스님이 캔버스 바깥으로 잘리지 않고 석탑/내 캐릭터와 겹치지 않게 좌측 마당에 배치
+    this.monkState.y = h * 0.70;
+    const patrolOffset = (this.monkState.action === "patrolling") ? (this.monkState.walkOffset || 0) : 0;
+    this.monkState.x = w * 0.28 + patrolOffset;
+
     const mx = this.monkState.x;
     const my = this.monkState.y;
     const action = this.monkState.action;

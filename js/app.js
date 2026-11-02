@@ -251,21 +251,71 @@ class TempleAppController {
     if (btnShowFullLogin) {
       btnShowFullLogin.addEventListener("click", () => {
         const welcomeBackCard = document.getElementById("welcome-back-card");
-        const welcomeFormCard = document.getElementById("welcome-form-card");
+        const welcomeFormCard = document.getElementById("full-login-card");
         if (welcomeBackCard) welcomeBackCard.style.display = "none";
         if (welcomeFormCard) {
           welcomeFormCard.style.display = "block";
+          const step1 = document.getElementById("char-step-1");
+          const step2 = document.getElementById("char-step-2");
+          if (step1) step1.style.display = "flex";
+          if (step2) step2.style.display = "none";
           this.updateCharacterPreview();
         }
       });
     }
 
+    // [챕터 1 -> 챕터 2 이동 버튼]
+    document.getElementById("btn-to-step-2")?.addEventListener("click", () => {
+      const nameInput = document.getElementById("login-name").value.trim();
+      const pinInput = document.getElementById("login-pin").value.trim();
+      const msgEl = document.getElementById("login-error-msg");
+
+      if (!nameInput) {
+        if (msgEl) {
+          msgEl.textContent = "성함 또는 가족 호칭을 입력해 주세요.";
+          msgEl.style.display = "block";
+        }
+        document.getElementById("login-name").focus();
+        return;
+      }
+
+      if (!pinInput || pinInput.length !== 4 || !/^\d{4}$/.test(pinInput)) {
+        if (msgEl) {
+          msgEl.textContent = "간편 비밀번호 숫자 4자리를 정확히 입력해 주세요.";
+          msgEl.style.display = "block";
+        }
+        document.getElementById("login-pin").focus();
+        return;
+      }
+
+      if (msgEl) msgEl.style.display = "none";
+
+      // 챕터 전환: 1단계 숨기고 2단계 캐릭터 꾸미기 노출
+      const step1 = document.getElementById("char-step-1");
+      const step2 = document.getElementById("char-step-2");
+      if (step1) step1.style.display = "none";
+      if (step2) {
+        step2.style.display = "flex";
+        const nameLabel = document.getElementById("preview-user-name-label");
+        if (nameLabel) nameLabel.textContent = `[${nameInput} 불자님 캐릭터]`;
+        this.updateCharacterPreview();
+      }
+    });
+
+    // [챕터 2 -> 챕터 1 되돌아가기 버튼]
+    document.getElementById("btn-back-to-step-1")?.addEventListener("click", () => {
+      const step1 = document.getElementById("char-step-1");
+      const step2 = document.getElementById("char-step-2");
+      if (step2) step2.style.display = "none";
+      if (step1) step1.style.display = "flex";
+    });
+
     const loginForm = document.getElementById("login-form");
     if (loginForm) {
       loginForm.addEventListener("submit", (e) => {
         e.preventDefault();
-        const nameInput = document.getElementById("login-name").value;
-        const pinInput = document.getElementById("login-pin").value;
+        const nameInput = document.getElementById("login-name").value.trim();
+        const pinInput = document.getElementById("login-pin").value.trim();
         const res = window.templeState.loginOrRegister(
           nameInput,
           pinInput,
@@ -279,6 +329,11 @@ class TempleAppController {
         if (!res.success) {
           msgEl.textContent = res.message;
           msgEl.style.display = "block";
+          // 만약 비번 에러면 1단계로 되돌림
+          const step1 = document.getElementById("char-step-1");
+          const step2 = document.getElementById("char-step-2");
+          if (step2) step2.style.display = "none";
+          if (step1) step1.style.display = "flex";
           return;
         }
         msgEl.style.display = "none";
@@ -293,7 +348,16 @@ class TempleAppController {
     document.getElementById("existing-family-chips")?.addEventListener("click", (e) => {
       const chip = e.target.closest(".family-user-chip");
       if (!chip) return;
-      document.getElementById("login-name").value = chip.dataset.name;
+      const userName = chip.dataset.name;
+      document.getElementById("login-name").value = userName;
+      const user = (window.templeState.state.users || []).find((u) => u.name === userName);
+      if (user) {
+        if (user.ageGroup) this.selectedAgeGroup = user.ageGroup;
+        if (user.faceStyle) this.selectedFaceStyle = user.faceStyle;
+        if (user.hairStyle) this.selectedHairStyle = user.hairStyle;
+        if (user.outfitColor) this.selectedOutfitColor = user.outfitColor;
+        this.renderCustomSelectors();
+      }
       document.getElementById("login-pin").focus();
     });
 
@@ -1016,19 +1080,19 @@ class TempleAppController {
     }
   }
 
-  showLoginOverlay() {
+  showLoginOverlay(forceForm = false) {
     const overlay = document.getElementById("login-overlay");
     if (!overlay) return;
     overlay.style.display = "flex";
 
     const welcomeBackCard = document.getElementById("welcome-back-card");
-    const welcomeFormCard = document.getElementById("welcome-form-card");
+    const welcomeFormCard = document.getElementById("full-login-card");
     const welcomeBackName = document.getElementById("welcome-back-name");
 
     const existingUser = window.templeState.currentUser || window.templeState.getLastActiveUser();
 
-    // [개선 4] 기존 불자가 있으면 원클릭 바로 입장 카드 표출
-    if (existingUser && welcomeBackCard && welcomeFormCard) {
+    // [개선 4] 기존 불자가 있고 전환 강제(forceForm)가 아니면 원클릭 바로 입장 카드 표출
+    if (!forceForm && existingUser && welcomeBackCard && welcomeFormCard) {
       welcomeBackCard.style.display = "block";
       welcomeFormCard.style.display = "none";
       if (welcomeBackName) {
@@ -1037,6 +1101,10 @@ class TempleAppController {
     } else {
       if (welcomeBackCard) welcomeBackCard.style.display = "none";
       if (welcomeFormCard) welcomeFormCard.style.display = "block";
+      const step1 = document.getElementById("char-step-1");
+      const step2 = document.getElementById("char-step-2");
+      if (step1) step1.style.display = "flex";
+      if (step2) step2.style.display = "none";
       this.updateCharacterPreview();
     }
 
