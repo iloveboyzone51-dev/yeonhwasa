@@ -474,33 +474,42 @@ class TempleStateManager {
   }
 
   async syncToCloudIfConfigured() {
-    const { supabaseUrl, supabaseKey } = this.state.settings || {};
+    const supabaseUrl = this.state.settings?.supabaseUrl || window.TEMPLE_CONFIG.supabase?.url || "";
+    const supabaseKey = this.state.settings?.supabaseKey || window.TEMPLE_CONFIG.supabase?.anonKey || "";
     if (!supabaseUrl || !supabaseKey) return false;
 
     try {
-      const endpoint = `${supabaseUrl.replace(/\/$/, "")}/rest/v1/temple_state?id=eq.family_main`;
+      // Upsert: 행이 없으면 생성, 있으면 병합 갱신
+      const endpoint = `${supabaseUrl.replace(/\/$/, "")}/rest/v1/temple_state`;
       await fetch(endpoint, {
-        method: "PATCH",
+        method: "POST",
         headers: {
           apikey: supabaseKey,
           Authorization: `Bearer ${supabaseKey}`,
           "Content-Type": "application/json",
-          Prefer: "return=minimal"
+          Prefer: "resolution=merge-duplicates,return=minimal"
         },
         body: JSON.stringify({
-          payload: this.state,
+          id: "family_main",
+          payload: {
+            templeMerit: this.state.templeMerit,
+            wishes: this.state.wishes,
+            activityLogs: this.state.activityLogs,
+            templeLevel: this.state.templeLevel
+          },
           updated_at: new Date().toISOString()
         })
       });
       return true;
     } catch (e) {
-      console.warn("클라우드 동기화 대기 중:", e);
+      console.warn("가족 사찰 동기화 대기 중:", e);
       return false;
     }
   }
 
   async pullFromCloudIfConfigured() {
-    const { supabaseUrl, supabaseKey } = this.state.settings || {};
+    const supabaseUrl = this.state.settings?.supabaseUrl || window.TEMPLE_CONFIG.supabase?.url || "";
+    const supabaseKey = this.state.settings?.supabaseKey || window.TEMPLE_CONFIG.supabase?.anonKey || "";
     if (!supabaseUrl || !supabaseKey) return false;
 
     try {
@@ -515,8 +524,30 @@ class TempleStateManager {
       const rows = await res.json();
       if (rows && rows.length > 0 && rows[0].payload) {
         const remote = rows[0].payload;
-        const localSettings = this.state.settings;
-        this.state = { ...this.getDefaultState(), ...remote, settings: localSettings };
+        
+        // 가족 협동 데이터 병합 (사찰 공덕 점수는 항상 최대치/누적으로)
+        this.state.templeMerit = Math.max(this.state.templeMerit || 0, remote.templeMerit || 0);
+        
+        // 소원 연등 목록 병합 (원격 + 로컬 신규)
+        if (remote.wishes && Array.isArray(remote.wishes)) {
+          const map = new Map();
+          remote.wishes.forEach((w) => map.set(w.id, w));
+          (this.state.wishes || []).forEach((w) => {
+            if (!map.has(w.id)) map.set(w.id, w);
+          });
+          this.state.wishes = Array.from(map.values());
+        }
+
+        // 활동 일지 병합
+        if (remote.activityLogs && Array.isArray(remote.activityLogs)) {
+          const logMap = new Map();
+          remote.activityLogs.forEach((l) => logMap.set(l.id, l));
+          (this.state.activityLogs || []).forEach((l) => {
+            if (!logMap.has(l.id)) logMap.set(l.id, l);
+          });
+          this.state.activityLogs = Array.from(logMap.values()).slice(0, 30);
+        }
+
         localStorage.setItem(STORAGE_KEY, JSON.stringify(this.state));
         this.notifyListeners();
         return true;
@@ -525,6 +556,13 @@ class TempleStateManager {
     } catch (e) {
       return false;
     }
+  }
+
+  startPeriodicCloudSync() {
+    if (this.cloudSyncInterval) return;
+    this.cloudSyncInterval = setInterval(() => {
+      this.pullFromCloudIfConfigured();
+    }, 20000); // 20초마다 온 가족 사찰 데이터 실시간 동기화
   }
 }
 

@@ -10,8 +10,8 @@ window.TEMPLE_CONFIG = {
   defaultTempleName: "연화사(蓮華寺)",
 
   supabase: {
-    url: "",
-    anonKey: ""
+    url: "https://pvzxguecweqjybnrlctt.supabase.co",
+    anonKey: "sb_publishable_J48n_o8wXGKRqTkcoLqQEQ_8R8iM5TA"
   },
 
   gemini: {
@@ -122,6 +122,13 @@ window.TEMPLE_CONFIG = {
       artist: "비구니, 금강스님",
       audioUrl: "audio/track_06.mp3",
       localAudioUrl: "불경 모음/06 오분향게 합송(비구니, 금강스님 선창).mp3"
+    },
+    {
+      id: "track_chunsoo",
+      title: "10 한글 천수경 (화암스님)",
+      artist: "화암스님",
+      audioUrl: "audio/track_chunsoo.mp3",
+      localAudioUrl: "불경 모음/03+화암스님+한글천수경.mp3"
     }
   ],
 

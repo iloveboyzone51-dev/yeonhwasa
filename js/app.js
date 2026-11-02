@@ -47,8 +47,9 @@ class TempleAppController {
     this.bindEvents();
     this.startClock();
 
-    // 클라우드 동기화 시도
+    // 클라우드 동기화 시도 및 20초 주기 자동 동기화 가동
     window.templeState.pullFromCloudIfConfigured();
+    window.templeState.startPeriodicCloudSync();
 
     // [개선 4] 세션 로그인 또는 기존 불자 분기 체크
     if (window.templeState.currentUser) {
@@ -617,6 +618,7 @@ class TempleAppController {
     if (tabName === "courtyard") {
       window.templeGraphics.setScene("courtyard");
       window.templeAudio.startNatureAmbience();
+      window.templeState.pullFromCloudIfConfigured();
     } else if (tabName === "hall") {
       window.templeGraphics.setScene("hall");
       window.templeAudio.playTempleBell(false);
@@ -628,6 +630,7 @@ class TempleAppController {
       window.templeAudio.playWindChime();
     } else if (tabName === "wishes") {
       window.templeAudio.playWindChime();
+      window.templeState.pullFromCloudIfConfigured();
       this.renderWishesBoard();
     }
   }
