@@ -1,0 +1,1504 @@
+/**
+ * [세로형 가족 온라인 사찰 스타일시트 - css/style.css]
+ * - 6단계 실제 시간대 & 자연 순환 날씨
+ * - 실제 스님 목소리 불교 경전 BGM 플레이어 UI
+ * - 패미콤/레트로 어드벤처 캔버스 다실 레이아웃
+ * - 10종 헤어스타일 및 연령대 선택 그리드
+ * - 경내 가족 연등 클릭 팝업 및 공양 현실 보시금 시스템
+ */
+
+:root {
+  --wood-dark: #22140d;
+  --wood-mid: #3a2217;
+  --wood-light: #5a3726;
+  --gold-primary: #ffd54f;
+  --gold-soft: #ffe082;
+  --hanji-bg: #faf6ee;
+  --hanji-card: #fffdf8;
+  --text-dark: #2a1c14;
+  --text-light: #fff8e7;
+  --jade-green: #2e6b47;
+  --dancheong-red: #b73b2b;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at center, #26352d 0%, #0d1411 100%);
+  font-family: "Pretendard", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+  color: var(--text-light);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+/* 세로형(Portrait) 사찰 메인 컨테이너 */
+.portrait-app-shell {
+  width: 100%;
+  max-width: 460px;
+  height: 100dvh;
+  max-height: 960px;
+  background: var(--wood-dark);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 0 2px rgba(255, 213, 79, 0.25);
+  overflow: hidden;
+}
+
+@media (min-width: 500px) {
+  .portrait-app-shell {
+    height: 96dvh;
+    border-radius: 26px;
+  }
+}
+
+/* 상단 사찰 헤더 */
+.temple-header {
+  background: linear-gradient(180deg, #1b100a 0%, #2b1911 100%);
+  padding: 8px 12px 6px;
+  border-bottom: 1px solid rgba(255, 213, 79, 0.25);
+  z-index: 10;
+}
+
+.header-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.temple-brand {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.temple-brand h1 {
+  font-size: 1.12rem;
+  color: var(--gold-primary);
+  letter-spacing: 0.5px;
+}
+
+.ambience-pill {
+  font-size: 0.72rem;
+  background: rgba(255, 213, 79, 0.16);
+  color: var(--gold-soft);
+  padding: 2px 7px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 213, 79, 0.3);
+}
+
+.header-controls {
+  display: flex;
+  gap: 5px;
+}
+
+.icon-chip-btn {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-light);
+  border: 1px solid rgba(255, 213, 79, 0.28);
+  padding: 4px 7px;
+  border-radius: 9px;
+  font-size: 0.74rem;
+  cursor: pointer;
+}
+
+/* [개선 6] 실제 스님 독경 BGM 플레이어 바 */
+.bgm-player-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 213, 79, 0.22);
+  border-radius: 10px;
+  padding: 4px 8px;
+  margin-bottom: 5px;
+  gap: 6px;
+}
+
+.bgm-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  flex: 1;
+}
+
+.bgm-disc-icon {
+  font-size: 0.95rem;
+  display: inline-block;
+  transition: transform 0.2s linear;
+}
+
+.bgm-disc-icon.spinning {
+  animation: discSpin 4s linear infinite;
+}
+
+@keyframes discSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.bgm-title-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+
+.bgm-track-title {
+  font-size: 0.74rem;
+  color: var(--gold-soft);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 700;
+}
+
+.bgm-dropdown {
+  background: rgba(30, 18, 12, 0.95);
+  color: #fff8e7;
+  border: 1px solid rgba(255, 213, 79, 0.45);
+  border-radius: 6px;
+  font-size: 0.68rem;
+  padding: 2px 4px;
+  width: 100%;
+  max-width: 175px;
+  outline: none;
+  cursor: pointer;
+}
+
+.bgm-dropdown option {
+  background: #2a1810;
+  color: #fff8e7;
+}
+
+.volume-text {
+  font-size: 0.65rem;
+  color: var(--gold-soft);
+  font-weight: 700;
+  min-width: 24px;
+  text-align: right;
+}
+
+.bgm-controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.bgm-btn {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 213, 79, 0.3);
+  color: #fff;
+  border-radius: 7px;
+  padding: 3px 6px;
+  font-size: 0.72rem;
+  cursor: pointer;
+}
+
+.bgm-btn.primary-play {
+  background: linear-gradient(135deg, #c87a19, #8e4f06);
+  color: #fffde7;
+  font-weight: 700;
+  border-color: var(--gold-primary);
+}
+
+.bgm-slider {
+  width: 48px;
+  height: 4px;
+  accent-color: var(--gold-primary);
+  cursor: pointer;
+}
+
+.header-sub-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.76rem;
+  color: #d7ccc8;
+  margin-bottom: 5px;
+}
+
+.user-status-badge {
+  color: var(--gold-soft);
+  font-weight: 600;
+}
+
+/* 사찰 불사 진행 게이지 */
+.temple-progress-box {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 9px;
+  padding: 5px 8px;
+  border: 1px solid rgba(255, 213, 79, 0.18);
+  cursor: pointer;
+}
+
+.progress-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.74rem;
+  margin-bottom: 3px;
+}
+
+#temple-level-name {
+  color: var(--gold-primary);
+  font-weight: 700;
+}
+
+#temple-merit-score {
+  color: #e0e0e0;
+  font-size: 0.7rem;
+}
+
+.progress-track {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.14);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  width: 30%;
+  background: linear-gradient(90deg, #ffb300, #ffee58);
+  border-radius: 3px;
+  transition: width 0.4s ease;
+}
+
+/* 활동 티커 */
+.activity-ticker {
+  background: rgba(46, 107, 71, 0.35);
+  color: #e8f5e9;
+  font-size: 0.74rem;
+  padding: 4px 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* 메인 영역 */
+.main-stage {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.tab-panel {
+  display: none;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.tab-panel.active {
+  display: flex;
+}
+
+.canvas-stage-wrap {
+  flex: 1;
+  position: relative;
+  width: 100%;
+  min-height: 280px;
+  overflow: hidden;
+}
+
+.canvas-stage-wrap canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* 경내 하단 액션 바 */
+.courtyard-action-bar {
+  background: linear-gradient(180deg, rgba(34, 20, 13, 0.94), #170d08);
+  padding: 8px 10px;
+  border-top: 1px solid rgba(255, 213, 79, 0.25);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 7px;
+}
+
+.action-card-btn {
+  background: linear-gradient(135deg, #482a1c, #321c12);
+  color: var(--text-light);
+  border: 1px solid rgba(255, 213, 79, 0.35);
+  border-radius: 11px;
+  padding: 9px 8px;
+  font-size: 0.86rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+.action-card-btn.primary-gold {
+  background: linear-gradient(135deg, #af6500, #734000);
+  border-color: var(--gold-primary);
+  color: #fffde7;
+}
+
+.action-card-btn.samseonggak-gold {
+  background: linear-gradient(135deg, #1b4d31, #0f2e1d);
+  border-color: #81c784;
+  color: #e8f5e9;
+}
+
+.action-card-btn:active {
+  transform: scale(0.97);
+}
+
+/* 대웅전 컨트롤 패널 */
+.sutra-banner {
+  position: absolute;
+  top: 8px;
+  left: 10px;
+  right: 10px;
+  background: rgba(25, 14, 9, 0.88);
+  border: 1px solid var(--gold-primary);
+  border-radius: 10px;
+  padding: 6px 10px;
+  text-align: center;
+  z-index: 5;
+}
+
+.sutra-banner-label {
+  font-size: 0.68rem;
+  color: var(--gold-primary);
+}
+
+#heart-sutra-text {
+  font-size: 0.84rem;
+  color: #fffde7;
+  font-weight: 600;
+}
+
+.hall-control-dock {
+  background: linear-gradient(180deg, #27160e, #170d08);
+  padding: 8px 10px;
+  border-top: 1px solid rgba(255, 213, 79, 0.3);
+}
+
+/* [개선 3] 부처님 전 발원문 선택 도크 */
+.bow-supplication-bar {
+  background: rgba(0, 0, 0, 0.38);
+  border: 1px solid rgba(255, 213, 79, 0.35);
+  border-radius: 9px;
+  padding: 5px 8px;
+  margin-bottom: 7px;
+}
+
+.supplication-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.72rem;
+  color: var(--gold-primary);
+  font-weight: 700;
+  margin-bottom: 3px;
+}
+
+.supplication-sub {
+  font-size: 0.65rem;
+  color: #d7ccc8;
+  font-weight: normal;
+}
+
+.supplication-input-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.bow-wish-dropdown {
+  background: #2b1810;
+  color: #fff8e7;
+  border: 1px solid rgba(255, 213, 79, 0.5);
+  border-radius: 6px;
+  padding: 4px 6px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  outline: none;
+  cursor: pointer;
+  width: 100%;
+}
+
+.bow-wish-input {
+  background: #3e2417;
+  color: #fff8e1;
+  border: 1px solid #ffd54f;
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 0.76rem;
+  outline: none;
+  width: 100%;
+  animation: fadeInPop 0.2s ease-out;
+}
+
+.hall-stat-line {
+  text-align: center;
+  font-size: 0.78rem;
+  color: var(--gold-soft);
+  margin-bottom: 7px;
+}
+
+.bow-buttons-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 6px;
+  margin-bottom: 7px;
+}
+
+.bow-btn {
+  background: linear-gradient(180deg, #8d2f23, #651e16);
+  color: #fff8e1;
+  border: 1px solid var(--gold-primary);
+  border-radius: 10px;
+  padding: 9px 4px;
+  font-size: 0.84rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.bow-btn span.sub-reward {
+  font-size: 0.68rem;
+  color: var(--gold-soft);
+  font-weight: 400;
+}
+
+.bow-btn:active {
+  transform: scale(0.96);
+}
+
+.samseong-banner {
+  background: linear-gradient(90deg, rgba(27, 77, 49, 0.95), rgba(15, 46, 29, 0.95));
+  border-bottom: 1.5px solid #81c784;
+}
+
+.bow-btn.sam-bow-btn {
+  background: linear-gradient(180deg, #1b4d31, #0d281a);
+  border-color: #81c784;
+}
+
+.hall-utility-row {
+  display: grid;
+  grid-template-columns: 1fr 1.15fr 1.15fr;
+  gap: 5px;
+}
+
+.util-btn {
+  background: #3e2417;
+  color: var(--text-light);
+  border: 1px solid rgba(255, 213, 79, 0.35);
+  border-radius: 9px;
+  padding: 8px 4px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.util-btn.primary-accent {
+  background: linear-gradient(135deg, #2e6b47, #1e4d31);
+  border-color: #a5d6a7;
+  font-weight: 700;
+}
+
+.util-btn.auto-moktak-btn.active {
+  background: linear-gradient(135deg, #c87a19, #8e4f06);
+  border-color: var(--gold-primary);
+  color: #fffde7;
+  font-weight: 700;
+  box-shadow: 0 0 8px rgba(255, 213, 79, 0.5);
+  animation: pulseGold 1.5s infinite;
+}
+
+@keyframes pulseGold {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+}
+
+/* [개선 7] 자동 목탁 속도 조절 도크 */
+.auto-moktak-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 213, 79, 0.25);
+  border-radius: 8px;
+  padding: 4px 8px;
+  margin-top: 5px;
+  animation: fadeInPop 0.2s ease-out;
+}
+
+.auto-moktak-label {
+  font-size: 0.7rem;
+  color: var(--gold-soft);
+  font-weight: 600;
+}
+
+.speed-btn-group {
+  display: flex;
+  gap: 4px;
+}
+
+.speed-chip {
+  background: rgba(255, 255, 255, 0.1);
+  color: #d7ccc8;
+  border: 1px solid rgba(255, 213, 79, 0.2);
+  border-radius: 6px;
+  padding: 2px 6px;
+  font-size: 0.68rem;
+  cursor: pointer;
+}
+
+.speed-chip.active {
+  background: #ffb300;
+  color: #2b1810;
+  font-weight: 700;
+  border-color: #ffd54f;
+}
+
+/* [개선 4] 주지스님 다실 (패미콤/레트로 RPG 감성) */
+.monk-room-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: #1e130c;
+  overflow: hidden;
+}
+
+.monk-canvas-wrap {
+  width: 100%;
+  height: 220px;
+  position: relative;
+  background: #000;
+  border-bottom: 2px solid var(--gold-primary);
+}
+
+.monk-canvas-wrap canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.quick-topics-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  padding: 6px 10px;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.quick-topic-chip {
+  background: rgba(255, 213, 79, 0.14);
+  color: var(--gold-soft);
+  border: 1px solid rgba(255, 213, 79, 0.35);
+  border-radius: 14px;
+  padding: 4px 8px;
+  font-size: 0.74rem;
+  cursor: pointer;
+}
+
+.chat-messages-box {
+  flex: 1;
+  padding: 10px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.chat-bubble {
+  max-width: 88%;
+  padding: 8px 12px;
+  border-radius: 12px;
+  line-height: 1.45;
+  font-size: 0.88rem;
+}
+
+.monk-bubble {
+  align-self: flex-start;
+  background: var(--hanji-card);
+  color: var(--text-dark);
+  border-top-left-radius: 3px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  border-left: 4px solid #c87a19;
+}
+
+.user-bubble {
+  align-self: flex-end;
+  background: #2e6b47;
+  color: #ffffff;
+  border-top-right-radius: 3px;
+}
+
+.bubble-author {
+  font-size: 0.72rem;
+  font-weight: 700;
+  margin-bottom: 3px;
+  opacity: 0.85;
+}
+
+.chat-input-bar {
+  display: flex;
+  gap: 6px;
+  padding: 8px 10px;
+  background: #170d08;
+  border-top: 1px solid rgba(255, 213, 79, 0.25);
+}
+
+.chat-input-bar input {
+  flex: 1;
+  background: var(--hanji-bg);
+  color: var(--text-dark);
+  border: 1px solid #bcaaa4;
+  border-radius: 9px;
+  padding: 8px 10px;
+  font-size: 0.9rem;
+}
+
+.chat-input-bar button {
+  background: linear-gradient(135deg, #c87a19, #9c5708);
+  color: #fff;
+  border: 1px solid var(--gold-primary);
+  border-radius: 9px;
+  padding: 0 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* 가족 안부 연등 화면 */
+.wishes-board-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(180deg, #1d1419 0%, #291a20 100%);
+  overflow: hidden;
+}
+
+.wish-banner-note {
+  font-size: 0.76rem;
+  color: #ffecb3;
+  margin-bottom: 6px;
+  line-height: 1.35;
+}
+
+.wish-form-box {
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.28);
+  border-bottom: 1px solid rgba(255, 213, 79, 0.25);
+}
+
+.wish-form-row {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.wish-form-row select {
+  background: var(--hanji-bg);
+  color: var(--text-dark);
+  border-radius: 8px;
+  padding: 7px;
+  font-weight: 600;
+  border: 1px solid #bcaaa4;
+  font-size: 0.8rem;
+}
+
+.wish-form-row input {
+  flex: 1;
+  background: var(--hanji-bg);
+  color: var(--text-dark);
+  border-radius: 8px;
+  padding: 8px 10px;
+  border: 1px solid #bcaaa4;
+  font-size: 0.86rem;
+}
+
+.btn-submit-wish {
+  width: 100%;
+  background: linear-gradient(135deg, #c62828, #8e1c1c);
+  color: #fff8e1;
+  border: 1px solid var(--gold-primary);
+  border-radius: 9px;
+  padding: 9px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.wishes-scroll-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.wish-lantern-card {
+  background: var(--hanji-card);
+  color: var(--text-dark);
+  border-radius: 11px;
+  padding: 10px 12px;
+  border-left: 5px solid #d84315;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.wish-card-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 5px;
+  font-size: 0.76rem;
+}
+
+.wish-tag {
+  background: #ffecb3;
+  color: #bf360c;
+  padding: 2px 6px;
+  border-radius: 7px;
+  font-weight: 700;
+}
+
+.wish-author {
+  font-weight: 700;
+  color: #3e2723;
+}
+
+.wish-date {
+  margin-left: auto;
+  color: #795548;
+}
+
+.wish-card-body {
+  font-size: 0.88rem;
+  line-height: 1.45;
+  margin-bottom: 6px;
+  color: #212121;
+}
+
+.btn-pray-wish {
+  background: #fff3e0;
+  color: #bf360c;
+  border: 1px solid #ffcc80;
+  border-radius: 7px;
+  padding: 5px 10px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* 하단 네비게이션 */
+.bottom-nav {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  background: #140b07;
+  border-top: 1px solid rgba(255, 213, 79, 0.3);
+  padding: 5px 2px;
+  z-index: 10;
+}
+
+.nav-tab-btn {
+  background: transparent;
+  border: none;
+  color: #bcaaa4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 5px 2px;
+  font-size: 0.74rem;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 9px;
+}
+
+.nav-tab-btn .nav-icon {
+  font-size: 1.2rem;
+}
+
+.nav-tab-btn.active {
+  color: var(--gold-primary);
+  background: rgba(255, 213, 79, 0.12);
+}
+
+/* [개선 9] 로그인 및 10종 헤어스타일/연령대 커스텀 */
+.login-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(14, 20, 16, 0.96), rgba(30, 18, 12, 0.98));
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 16px;
+  overflow-y: auto;
+}
+
+/* [개선 4] 기존 불자 재접속 환영 카드 */
+.welcome-back-card {
+  background: var(--hanji-card);
+  color: var(--text-dark);
+  border-radius: 18px;
+  padding: 24px 18px;
+  border: 2px solid var(--gold-primary);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.7);
+  text-align: center;
+  animation: fadeInPop 0.35s ease-out;
+}
+
+/* [개선 1] 계정전환/로그인 취소 닫기 버튼 */
+.btn-cancel-login-overlay {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  background: rgba(0, 0, 0, 0.08);
+  border: 1px solid #d7ccc8;
+  border-radius: 8px;
+  padding: 4px 8px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #5d4037;
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.15s ease;
+}
+
+.btn-cancel-login-overlay:hover {
+  background: #fbe9e7;
+  color: #c62828;
+}
+
+@keyframes fadeInPop {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.welcome-back-card .lotus-emblem {
+  font-size: 2.6rem;
+  margin-bottom: 8px;
+  animation: lotusPulse 2.5s infinite ease-in-out;
+}
+
+@keyframes lotusPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
+
+.welcome-back-card h2 {
+  font-size: 1.25rem;
+  color: #3e2723;
+  margin-bottom: 6px;
+  font-weight: 800;
+}
+
+.welcome-back-card p {
+  font-size: 0.82rem;
+  color: #5d4037;
+  line-height: 1.45;
+  margin-bottom: 18px;
+}
+
+.welcome-back-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.btn-sub-link {
+  background: transparent;
+  border: none;
+  color: #795548;
+  font-size: 0.76rem;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.btn-sub-link:hover {
+  color: #3e2723;
+}
+
+/* [개선 3] 게임 스타일 실시간 캐릭터 미리보기 박스 */
+.custom-avatar-preview-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 10px auto 14px;
+  padding: 10px;
+  background: radial-gradient(circle, #fcf8ee 0%, #ede3cf 100%);
+  border: 2px solid #deb887;
+  border-radius: 14px;
+  box-shadow: inset 0 2px 6px rgba(0,0,0,0.08), 0 3px 8px rgba(0,0,0,0.1);
+  width: 140px;
+}
+
+#character-preview-canvas {
+  width: 110px;
+  height: 110px;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  border-radius: 8px;
+}
+
+.preview-caption {
+  font-size: 0.68rem;
+  color: #6d4c41;
+  font-weight: 700;
+  margin-top: 4px;
+}
+
+.login-card {
+  background: var(--hanji-card);
+  color: var(--text-dark);
+  border-radius: 16px;
+  padding: 18px 16px;
+  border: 2px solid var(--gold-primary);
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.6);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.login-card-header {
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.login-card-header .lotus-emblem {
+  font-size: 2rem;
+}
+
+.login-card-header h2 {
+  font-size: 1.2rem;
+  color: #3e2723;
+  margin: 3px 0;
+}
+
+.login-card-header p {
+  font-size: 0.8rem;
+  color: #5d4037;
+  line-height: 1.35;
+}
+
+.existing-family-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-bottom: 10px;
+  align-items: center;
+}
+
+.chips-label {
+  width: 100%;
+  font-size: 0.74rem;
+  color: #6d4c41;
+  font-weight: 700;
+}
+
+.family-user-chip {
+  background: #fff3e0;
+  color: #4e342e;
+  border: 1px solid #ffb74d;
+  border-radius: 12px;
+  padding: 4px 8px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.custom-section-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #4e342e;
+  margin: 8px 0 4px;
+}
+
+/* [개선 3] 얼굴 표정 그리드 (4종) */
+.face-style-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.face-choice-btn {
+  background: #f7f1e6;
+  border: 1.5px solid #d7ccc8;
+  border-radius: 8px;
+  padding: 6px;
+  font-size: 0.74rem;
+  color: #3e2723;
+  font-weight: 700;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.15s ease;
+}
+
+.face-choice-btn.active {
+  background: #fff8e1;
+  border-color: #ff8f00;
+  color: #bf360c;
+  box-shadow: 0 0 6px rgba(255, 143, 0, 0.4);
+}
+
+/* 연령대 그리드 */
+.age-group-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 5px;
+  margin-bottom: 8px;
+}
+
+.age-choice-btn {
+  background: #f7f1e6;
+  border: 1.5px solid #d7ccc8;
+  border-radius: 8px;
+  padding: 6px;
+  font-size: 0.75rem;
+  color: #3e2723;
+  font-weight: 700;
+  cursor: pointer;
+  text-align: center;
+}
+
+.age-choice-btn.active {
+  background: #fff8e1;
+  border-color: #ff8f00;
+  color: #bf360c;
+}
+
+/* 10종 헤어스타일 그리드 */
+.hair-style-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 5px;
+  margin-bottom: 8px;
+}
+
+.hair-choice-btn {
+  background: #f7f1e6;
+  border: 1.5px solid #d7ccc8;
+  border-radius: 8px;
+  padding: 5px 2px;
+  font-size: 0.72rem;
+  color: #3e2723;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.hair-choice-btn .hair-icon {
+  font-size: 1.25rem;
+}
+
+.hair-choice-btn .hair-name {
+  font-size: 0.65rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 58px;
+}
+
+.hair-choice-btn.active {
+  background: #fff8e1;
+  border-color: #ff8f00;
+  color: #bf360c;
+}
+
+/* 법복 컬러 그리드 */
+.outfit-color-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 5px;
+  margin-bottom: 12px;
+}
+
+.outfit-choice-btn {
+  background: #f7f1e6;
+  border: 1.5px solid #d7ccc8;
+  border-radius: 8px;
+  padding: 6px 3px;
+  font-size: 0.72rem;
+  color: #3e2723;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.outfit-choice-btn .color-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.outfit-choice-btn.active {
+  background: #fff8e1;
+  border-color: #ff8f00;
+  color: #bf360c;
+}
+
+.form-group {
+  margin-bottom: 10px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #3e2723;
+  margin-bottom: 3px;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 9px 10px;
+  font-size: 0.95rem;
+  border: 1.5px solid #bcaaa4;
+  border-radius: 9px;
+  background: #fff;
+  color: #212121;
+}
+
+.login-error {
+  color: #c62828;
+  font-size: 0.8rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  display: none;
+}
+
+.btn-login-submit {
+  width: 100%;
+  background: linear-gradient(135deg, #2e6b47, #1e4d31);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 12px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* 모달 */
+.modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  z-index: 40;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  padding: 14px;
+}
+
+.modal-sheet {
+  width: 100%;
+  max-height: 86%;
+  background: var(--hanji-card);
+  color: var(--text-dark);
+  border-radius: 15px;
+  border: 2px solid var(--gold-primary);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.modal-header {
+  padding: 10px 14px;
+  background: #3a2217;
+  color: var(--gold-primary);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header h3 {
+  font-size: 0.95rem;
+}
+
+.btn-close-modal {
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.modal-body {
+  padding: 12px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* 공양 카드 리스트 (현실 가격) */
+.offering-summary-box {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 700;
+  font-size: 0.84rem;
+  color: #bf360c;
+  background: #fff3e0;
+  padding: 6px 10px;
+  border-radius: 8px;
+}
+
+.offering-guide-tag {
+  font-size: 0.7rem;
+  background: #ffcc80;
+  padding: 2px 6px;
+  border-radius: 6px;
+}
+
+.offerings-scroll-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.offering-card {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fff;
+  border: 1px solid #e0d6c8;
+  border-radius: 11px;
+  padding: 8px 10px;
+}
+
+.offering-card.active-offering {
+  border-color: #ffb300;
+  background: #fffef5;
+}
+
+.offering-icon {
+  font-size: 1.7rem;
+}
+
+.offering-info {
+  flex: 1;
+}
+
+.offering-title {
+  font-weight: 700;
+  font-size: 0.88rem;
+  color: #3e2723;
+}
+
+.offering-desc {
+  font-size: 0.74rem;
+  color: #5d4037;
+  margin: 2px 0;
+  line-height: 1.35;
+}
+
+.offering-meta {
+  font-size: 0.72rem;
+  color: #bf360c;
+}
+
+.btn-make-offering {
+  background: linear-gradient(135deg, #d84315, #bf360c);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 7px 11px;
+  font-weight: 700;
+  font-size: 0.78rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.btn-make-offering.done {
+  background: #bdbdbd;
+  cursor: not-allowed;
+}
+
+/* [개선 2] 연등 상세 팝업 */
+.wish-detail-box {
+  background: #fff8e1;
+  border: 1px solid #ffcc80;
+  border-radius: 10px;
+  padding: 12px;
+  font-size: 0.92rem;
+  line-height: 1.45;
+  color: #3e2723;
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+
+.btn-modal-pray {
+  width: 100%;
+  background: linear-gradient(135deg, #c87a19, #9c5708);
+  color: #fffde7;
+  border: 1px solid var(--gold-primary);
+  border-radius: 9px;
+  padding: 10px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* 가이드 카드 */
+.settings-guide-card {
+  background: #f1f8e9;
+  border: 1px solid #a5d6a7;
+  border-radius: 10px;
+  padding: 10px;
+  color: #1b5e20;
+  font-size: 0.76rem;
+  line-height: 1.4;
+}
+
+.settings-guide-card h4 {
+  font-size: 0.82rem;
+  margin-bottom: 4px;
+}
+
+/* 토스트 */
+.temple-toast {
+  position: absolute;
+  bottom: 68px;
+  left: 14px;
+  right: 14px;
+  background: rgba(22, 13, 8, 0.95);
+  color: var(--gold-soft);
+  border: 1px solid var(--gold-primary);
+  border-radius: 11px;
+  padding: 10px 12px;
+  font-size: 0.84rem;
+  font-weight: 600;
+  text-align: center;
+  z-index: 60;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(10px);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.temple-toast.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* [개선 5] 삼성각 전각 모달 스타일 */
+.samseonggak-card {
+  background: radial-gradient(circle at top, #fdfbf7 0%, #f4ede0 100%);
+  border: 1.5px solid #d4af37;
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-bottom: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.samseonggak-badge {
+  display: inline-block;
+  background: #1b4d31;
+  color: #e8f5e9;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 6px;
+  margin-bottom: 6px;
+}
+
+.samseonggak-card h4 {
+  font-size: 0.92rem;
+  color: #2b1810;
+  margin-bottom: 5px;
+  font-weight: 700;
+}
+
+.samseonggak-card p {
+  font-size: 0.78rem;
+  color: #5d4037;
+  line-height: 1.45;
+}
+
+.samseonggak-actions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.samseonggak-action-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #faf7f0;
+  border: 1px solid #d7ccc8;
+  border-radius: 10px;
+  padding: 10px 12px;
+  gap: 8px;
+}
+
+.samseonggak-action-item .action-info {
+  flex: 1;
+}
+
+.samseonggak-action-item .action-title {
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: #3e2723;
+  margin-bottom: 3px;
+}
+
+.samseonggak-action-item .action-desc {
+  font-size: 0.72rem;
+  color: #6d4c41;
+  line-height: 1.35;
+}
+
+.btn-samseonggak-act {
+  background: linear-gradient(135deg, #1b4d31, #0f2e1d);
+  color: #e8f5e9;
+  border: 1px solid #81c784;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.btn-samseonggak-act:hover {
+  background: linear-gradient(135deg, #2e6b47, #1b4d31);
+}

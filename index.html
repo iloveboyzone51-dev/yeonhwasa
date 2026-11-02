@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#20120b" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="연화사" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🪷</text></svg>" />
+  <title>연화사(蓮華寺) - 우리 가족 24시간 온라인 사찰</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="portrait-app-shell">
+    <!-- 상단 사찰 헤더 & 실제 스님 육성 경전 플레이어 & 실시간 시각 -->
+    <header class="temple-header">
+      <div class="header-top-row">
+        <div class="temple-brand">
+          <span>🪷</span>
+          <h1 id="header-temple-name">연화사(蓮華寺)</h1>
+          <span id="header-ambience-badge" class="ambience-pill">🌅 새벽예불 · 맑음</span>
+        </div>
+        <div class="header-controls">
+          <button type="button" id="btn-open-settings-modal" class="icon-chip-btn" title="24시간 공유 및 클라우드 설정">⚙️ 설정</button>
+          <button type="button" id="btn-switch-user" class="icon-chip-btn" title="가족 전환/로그아웃">계정전환</button>
+        </div>
+      </div>
+
+      <!-- [개선 5] 실제 스님 육성 독경 BGM 플레이어 (9곡 수록 및 실시간 볼륨 퍼센트) -->
+      <div class="bgm-player-bar">
+        <div class="bgm-info">
+          <span class="bgm-disc-icon" id="bgm-disc-anim">📿</span>
+          <div class="bgm-title-wrap">
+            <div class="bgm-track-title" id="bgm-current-title">07 반야심경 독송 (화암스님)</div>
+            <select id="bgm-track-select" class="bgm-dropdown" title="불경 음악 바로 선택"></select>
+          </div>
+        </div>
+        <div class="bgm-controls">
+          <button type="button" id="btn-bgm-prev" class="bgm-btn" title="이전 곡">⏮️</button>
+          <button type="button" id="btn-bgm-play-toggle" class="bgm-btn primary-play" title="재생/일시정지">▶️ 재생</button>
+          <button type="button" id="btn-bgm-next" class="bgm-btn" title="다음 곡">⏭️</button>
+          <button type="button" id="btn-toggle-sound-mute" class="bgm-btn" title="사찰 전체 소리 끄기/켜기">🔊 소리</button>
+          <div class="volume-slider-box">
+            <span id="bgm-volume-text" class="volume-text">50%</span>
+            <input type="range" id="bgm-volume-slider" min="0" max="1" step="0.05" value="0.5" class="bgm-slider" title="음량 조절" />
+          </div>
+        </div>
+      </div>
+
+      <div class="header-sub-row">
+        <span id="header-date-text">2026년 11월 2일 (월)</span>
+        <span id="header-user-info" class="user-status-badge">로그인 대기중</span>
+      </div>
+
+      <!-- 사찰 증축(불사) 게이지 바 -->
+      <div id="btn-open-build-modal" class="temple-progress-box" title="클릭하여 사찰 증축 단계 보기">
+        <div class="progress-labels">
+          <span id="temple-level-name">1단계: 고요한 산골 암자</span>
+          <span id="temple-merit-score">가족 합산 불사공덕 75점</span>
+        </div>
+        <div class="progress-track">
+          <div id="temple-level-bar-fill" class="progress-fill"></div>
+        </div>
+      </div>
+    </header>
+
+    <!-- 가족 최근 소식 티커 -->
+    <div id="family-activity-ticker" class="activity-ticker">
+      📢 산사의 새벽 종소리와 함께 연화사 도량이 활짝 열렸습니다.
+    </div>
+
+    <!-- 메인 컨텐츠 영역 (4개 탭) -->
+    <main class="main-stage">
+      <!-- [탭 1] 산사 경내 -->
+      <section id="panel-courtyard" class="tab-panel active">
+        <div class="canvas-stage-wrap">
+          <canvas id="courtyard-canvas"></canvas>
+        </div>
+        <div class="courtyard-action-bar">
+          <button type="button" id="btn-enter-hall" class="action-card-btn primary-gold">
+            🙏 대웅전 참배하기
+          </button>
+          <button type="button" id="btn-enter-samseonggak" class="action-card-btn samseonggak-gold">
+            ⛰️ 삼성각 (산신·칠성)
+          </button>
+          <button type="button" id="btn-ring-bell" class="action-card-btn">
+            🔔 범종 타종 (+500원)
+          </button>
+          <button type="button" id="btn-go-monk-tea" class="action-card-btn">
+            🍵 주지스님 다실
+          </button>
+          <button type="button" id="btn-quick-hang-wish" class="action-card-btn">
+            🏮 소원 연등 달기
+          </button>
+        </div>
+      </section>
+
+      <!-- [탭 2] 대웅전 (정통 7단계 오체투지 배례 & 공양) -->
+      <section id="panel-hall" class="tab-panel">
+        <div class="canvas-stage-wrap">
+          <div id="heart-sutra-banner" class="sutra-banner">
+            <div class="sutra-banner-label">📿 대웅전 정통 배례 도량</div>
+            <div id="heart-sutra-text">지극한 정성으로 부처님 전에 삼배를 올립니다.</div>
+          </div>
+          <canvas id="hall-canvas"></canvas>
+        </div>
+
+        <div class="hall-control-dock">
+          <!-- [개선 3] 부처님 전 간절한 발원문 선택 및 직접 입력 도크 -->
+          <div class="bow-supplication-bar">
+            <div class="supplication-label">
+              <span>📿 부처님 전 간절한 나의 발원(기원)</span>
+              <span class="supplication-sub">절을 올리는 동안 정성껏 축원됩니다</span>
+            </div>
+            <div class="supplication-input-row">
+              <select id="bow-wish-select" class="bow-wish-dropdown">
+                <option value="부모님의 만수무강과 건강 회복을 지성으로 발원합니다.">🙏 부모님 만수무강·건강 회복</option>
+                <option value="우리 온 가족의 화목과 가내 두루 평안을 발원합니다.">🌸 온 가족의 화목과 가내 평안</option>
+                <option value="자녀들의 앞길이 활짝 열리고 지혜롭기를 발원합니다.">⭐ 자녀 학업·소원성취</option>
+                <option value="모든 근심과 번뇌가 사라지고 마음의 평온을 발원합니다.">🕊️ 근심 해소·마음의 평화</option>
+                <option value="가업이 번창하고 뜻하는 모든 일의 성취를 발원합니다.">🌿 가업 번창·일체 원만성취</option>
+                <option value="일체 모든 인연의 업장소멸과 성불을 발원합니다.">🪷 일체 인연 업장소멸·성불</option>
+                <option value="custom">✏️ 직접 내 마음의 기원 적기...</option>
+              </select>
+              <input type="text" id="bow-wish-custom-input" class="bow-wish-input" placeholder="부처님 전에 올릴 간절한 소원을 적어주세요 (최대 35자)" style="display:none;" maxlength="35" />
+            </div>
+          </div>
+
+          <div id="hall-bow-stat" class="hall-stat-line">
+            부처님 전에 경건한 마음으로 정통 오체투지 예를 올립니다.
+          </div>
+
+          <div class="bow-buttons-row">
+            <button type="button" id="btn-bow-1" class="bow-btn">
+              <span>🙇 1배 정진</span>
+              <span class="sub-reward">일심예배 (+1,000원)</span>
+            </button>
+            <button type="button" id="btn-bow-3" class="bow-btn">
+              <span>🙏 삼배(3배)</span>
+              <span class="sub-reward">삼귀의례 (+3,000원)</span>
+            </button>
+            <button type="button" id="btn-bow-108" class="bow-btn">
+              <span>📿 108배 원력</span>
+              <span class="sub-reward">대원만 (+20,000원)</span>
+            </button>
+          </div>
+
+          <div class="hall-utility-row">
+            <button type="button" id="btn-hit-moktak" class="util-btn">
+              🪵 목탁 치기
+            </button>
+            <button type="button" id="btn-toggle-auto-moktak" class="util-btn auto-moktak-btn">
+              📿 자동 목탁 시작
+            </button>
+            <button type="button" id="btn-open-offering-modal" class="util-btn primary-accent">
+              🪷 정성 공양 올리기
+            </button>
+          </div>
+
+          <!-- [개선 7] 자동 목탁 속도 조절 도크 -->
+          <div id="auto-moktak-controls" class="auto-moktak-bar" style="display:none;">
+            <span class="auto-moktak-label">⏱️ 목탁 염불 속도:</span>
+            <div class="speed-btn-group">
+              <button type="button" class="speed-chip active" data-speed="900">보통 (0.9초)</button>
+              <button type="button" class="speed-chip" data-speed="1500">느림 (1.5초)</button>
+              <button type="button" class="speed-chip" data-speed="500">빠름 (0.5초)</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- [개선 3] 삼성각 (산신령님·치성광여래 칠성부처님 전 무병장수 정통 배례 도량) -->
+      <section id="panel-samseonggak" class="tab-panel">
+        <div class="canvas-stage-wrap">
+          <div class="sutra-banner samseong-banner">
+            <div class="sutra-banner-label">⛰️ 삼성각 (三聖閣) 무병장수 도량</div>
+            <div>산신령님과 칠성부처님 전에 지성으로 절을 올립니다.</div>
+          </div>
+          <canvas id="samseonggak-canvas"></canvas>
+        </div>
+
+        <div class="hall-control-dock">
+          <!-- 삼성각 전용 발원문 선택 도크 -->
+          <div class="bow-supplication-bar">
+            <div class="supplication-label">
+              <span>📿 산신·칠성님 전 간절한 무병장수 발원</span>
+              <span class="supplication-sub">절을 올리는 동안 정성껏 축원됩니다</span>
+            </div>
+            <div class="supplication-input-row">
+              <select id="sam-wish-select" class="bow-wish-dropdown">
+                <option value="부모님의 백년건강과 만수무강을 지성으로 발원합니다.">🙏 부모님의 만수무강·백년건강</option>
+                <option value="온 가족의 질병이 쾌유되고 무병무탈하기를 발원합니다.">🌿 가족의 지병 쾌유·무병무탈</option>
+                <option value="자손들의 앞길이 훤히 열리고 큰 지혜를 얻길 발원합니다.">⭐ 자손 번창·학업과 출세</option>
+                <option value="집안의 모든 액난과 삼재가 소멸되기를 발원합니다.">🐯 가내 액난 소멸·재앙 방지</option>
+                <option value="가업이 날로 번창하고 뜻하는 모든 소원 성취를 발원합니다.">🌸 가업 번창·만사형통</option>
+                <option value="custom">✏️ 직접 내 마음의 기원 적기...</option>
+              </select>
+              <input type="text" id="sam-wish-custom-input" class="bow-wish-input" placeholder="산신령님과 칠성부처님께 올릴 소원을 적어주세요" style="display:none;" maxlength="35" />
+            </div>
+          </div>
+
+          <div class="hall-stat-line" style="color:#a5d6a7;">
+            영험하신 산신님과 칠성부처님 전에 정통 오체투지 예를 올립니다.
+          </div>
+
+          <div class="bow-buttons-row">
+            <button type="button" id="btn-sam-bow-1" class="bow-btn sam-bow-btn">
+              <span>🙇 1배 정진</span>
+              <span class="sub-reward">수명장수 (+1,000원)</span>
+            </button>
+            <button type="button" id="btn-sam-bow-3" class="bow-btn sam-bow-btn">
+              <span>🙏 삼배(3배)</span>
+              <span class="sub-reward">삼신영험 (+3,000원)</span>
+            </button>
+            <button type="button" id="btn-sam-bow-108" class="bow-btn sam-bow-btn">
+              <span>📿 108배 원력</span>
+              <span class="sub-reward">만수무강 (+20,000원)</span>
+            </button>
+          </div>
+
+          <div class="hall-utility-row" style="grid-template-columns: 1.2fr 1fr;">
+            <button type="button" id="btn-sam-candle-inline" class="util-btn primary-accent">
+              🕯️ 촛불 공양 (-2,000원)
+            </button>
+            <button type="button" id="btn-sam-leave" class="util-btn">
+              🔙 산사 경내로 나가기
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- [탭 3] 주지스님 다실 (패미콤/레트로 RPG 감성 독대 차담 화면) -->
+      <section id="panel-monk" class="tab-panel">
+        <div class="monk-room-container">
+          <div class="monk-canvas-wrap">
+            <canvas id="monk-room-canvas"></canvas>
+          </div>
+
+          <div id="monk-quick-topics" class="quick-topics-wrap"></div>
+
+          <div id="monk-chat-messages" class="chat-messages-box">
+            <div class="chat-bubble monk-bubble">
+              <div class="bubble-author">🍵 혜안 주지스님</div>
+              <div class="bubble-text">
+                어서 오십시오. 깊은 산사까지 걸음하시느라 애쓰셨습니다. 따뜻한 차 한 잔 나누시며 오늘 가족분들의 안부와 마음속 이야기를 편히 들려주시구려. 🙏
+              </div>
+            </div>
+          </div>
+
+          <form id="monk-chat-form" class="chat-input-bar">
+            <input
+              type="text"
+              id="monk-chat-input"
+              placeholder="스님께 드릴 말씀을 적어보셔요..."
+              autocomplete="off"
+            />
+            <button type="submit">합장 전송</button>
+          </form>
+        </div>
+      </section>
+
+      <!-- [탭 4] 가족 안부 & 소원 연등 달기 -->
+      <section id="panel-wishes" class="tab-panel">
+        <div class="wishes-board-container">
+          <form id="wish-form" class="wish-form-box">
+            <div class="wish-banner-note">
+              🏮 이곳에 작성하신 소원 연등은 <strong>산사 경내 마당 연등 줄에 실제로 걸려</strong> 가족들이 언제든 확인하고 함께 합장할 수 있습니다.
+            </div>
+            <div class="wish-form-row">
+              <select id="wish-category">
+                <option value="부모님건강">🌿 부모님건강</option>
+                <option value="가족화목">💛 가족화목</option>
+                <option value="만사형통">🪷 만사형통</option>
+                <option value="소원성취">🏮 소원성취</option>
+                <option value="자녀행복">👶 자녀행복</option>
+              </select>
+              <input
+                type="text"
+                id="wish-content"
+                placeholder="부모님과 가족을 위한 사랑의 안부와 기도문을 적어주세요"
+                maxlength="100"
+              />
+            </div>
+            <button type="submit" class="btn-submit-wish">
+              🏮 가족 소원 연등 경내에 걸기 (+5,000원 보시금)
+            </button>
+          </form>
+
+          <div id="wishes-list" class="wishes-scroll-list"></div>
+        </div>
+      </section>
+    </main>
+
+    <!-- 하단 네비게이션 바 -->
+    <nav class="bottom-nav">
+      <button type="button" class="nav-tab-btn active" data-tab="courtyard">
+        <span class="nav-icon">🏯</span>
+        <span>산사 경내</span>
+      </button>
+      <button type="button" class="nav-tab-btn" data-tab="hall">
+        <span class="nav-icon">🙏</span>
+        <span>대웅전 참배</span>
+      </button>
+      <button type="button" class="nav-tab-btn" data-tab="monk">
+        <span class="nav-icon">🍵</span>
+        <span>주지스님 차담</span>
+      </button>
+      <button type="button" class="nav-tab-btn" data-tab="wishes">
+        <span class="nav-icon">🏮</span>
+        <span>가족 연등안부</span>
+      </button>
+    </nav>
+
+    <!-- [개선 3 & 4] 로그인/가입 & 실시간 아바타 미리보기 커스터마이징 오버레이 -->
+    <div id="login-overlay" class="login-overlay">
+      <!-- 기존 불자 재접속 시 원클릭 바로 입장 카드 -->
+      <div id="welcome-back-card" class="welcome-back-card" style="display:none; position:relative;">
+        <button type="button" class="btn-cancel-login-overlay" title="취소하고 도량으로 돌아가기">✕ 닫기</button>
+        <div class="lotus-emblem">🪷</div>
+        <h2 id="welcome-back-name">OOO 불자님, 반갑습니다!</h2>
+        <p id="welcome-back-desc">연화사 도량에 다시 오신 것을 진심으로 환영합니다. 오늘도 가내 두루 평안하시길 축원합니다.</p>
+        <button type="button" id="btn-quick-enter" class="btn-login-submit" style="margin-top:14px;">
+          🙏 마음산사 바로 입장하기
+        </button>
+        <button type="button" id="btn-show-full-login" class="btn-sub-link">
+          신규 등록 또는 다른 가족으로 변경하기
+        </button>
+      </div>
+
+      <!-- 신규/상세 커스터마이징 가입 폼 카드 -->
+      <div id="full-login-card" class="login-card" style="position:relative;">
+        <button type="button" class="btn-cancel-login-overlay" title="취소하고 도량으로 돌아가기">✕ 닫기</button>
+        <div class="login-card-header">
+          <div class="lotus-emblem">🪷</div>
+          <h2>나만의 불자 캐릭터 만들기</h2>
+          <p>얼굴 표정, 머리 스타일, 법복 색상을 선택하면 <strong>실시간 미리보기</strong>와 함께 도량에 나만의 캐릭터로 입장합니다.</p>
+        </div>
+
+        <!-- [개선 3] 게임 스타일 캐릭터 실시간 미리보기 미니 캔버스 -->
+        <div class="custom-avatar-preview-box">
+          <canvas id="character-preview-canvas" width="120" height="120"></canvas>
+          <div class="preview-caption">실시간 내 캐릭터 미리보기</div>
+        </div>
+
+        <div id="existing-family-chips" class="existing-family-chips"></div>
+
+        <form id="login-form">
+          <div class="form-group">
+            <label for="login-name">이름 또는 가족 호칭 (예: 어머니, 아버지, 큰딸, 지수)</label>
+            <input type="text" id="login-name" placeholder="이름을 입력해 주세요" required maxlength="12" />
+          </div>
+
+          <div class="form-group">
+            <label for="login-pin">간편 비밀번호 숫자 4자리</label>
+            <input
+              type="password"
+              id="login-pin"
+              inputmode="numeric"
+              pattern="\d{4}"
+              maxlength="4"
+              placeholder="숫자 4자리 입력 (예: 1234)"
+              required
+            />
+          </div>
+
+          <!-- 연령대 선택 -->
+          <div class="custom-section-title">1. 연령대 선택</div>
+          <div class="age-group-grid" id="age-group-selector"></div>
+
+          <!-- [개선 3] 얼굴 표정 4종 선택 -->
+          <div class="custom-section-title">2. 얼굴 표정 선택 (4종)</div>
+          <div class="face-style-grid" id="face-style-selector"></div>
+
+          <!-- 10종 헤어스타일 선택 -->
+          <div class="custom-section-title">3. 헤어스타일 선택 (10종)</div>
+          <div class="hair-style-grid" id="hair-style-selector"></div>
+
+          <!-- 5종 법복/한복 의상 컬러 선택 -->
+          <div class="custom-section-title">4. 법복 / 한복 색상 (5종)</div>
+          <div class="outfit-color-grid" id="outfit-color-selector"></div>
+
+          <div id="login-error-msg" class="login-error"></div>
+
+          <button type="submit" class="btn-login-submit">
+            🙏 캐릭터 저장하고 마음산사 들어가기
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- [모달 1] 현실 사찰 공양 올리기 모달 -->
+    <div id="modal-offerings" class="modal-backdrop">
+      <div class="modal-sheet">
+        <div class="modal-header">
+          <h3>🪷 부처님 전 정성 공양 올리기</h3>
+          <button type="button" class="btn-close-modal" data-close-modal="modal-offerings">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="offering-summary-box">
+            <span id="offering-modal-my-merit">보유 공양 보시금: 0원</span>
+            <span class="offering-guide-tag">1일 1회 정성 공양 제한</span>
+          </div>
+          <p style="font-size:0.78rem; color:#5d4037; line-height:1.4;">
+            ※ 공양 보시금은 <strong>매일 아침 출석, 대웅전 3배/108배 정진, 주지스님 차담, 가족 연등 축원</strong> 등 마음을 닦는 수행을 통해 정성껏 모으실 수 있습니다.
+          </p>
+          <div id="offerings-grid" class="offerings-scroll-grid"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- [모달 2] 경내 연등 클릭 시 상세 보기 팝업 모달 -->
+    <div id="modal-wish-detail" class="modal-backdrop">
+      <div class="modal-sheet" style="max-width:380px;">
+        <div class="modal-header">
+          <h3 id="wish-detail-title">🏮 가족 소원 연등</h3>
+          <button type="button" class="btn-close-modal" data-close-modal="modal-wish-detail">✕</button>
+        </div>
+        <div class="modal-body" style="text-align:center; padding:18px 16px;">
+          <div id="wish-detail-icon" style="font-size:2.4rem; margin-bottom:8px;">🏮</div>
+          <div id="wish-detail-author" style="font-size:1.05rem; font-weight:700; color:#3e2723; margin-bottom:4px;">어머니</div>
+          <div id="wish-detail-date" style="font-size:0.78rem; color:#795548; margin-bottom:12px;">2026-11-02 07:30</div>
+          <div id="wish-detail-content" class="wish-detail-box">
+            우리 가족 모두 건강하고 올 한 해도 평안하길 바랍니다.
+          </div>
+          <button type="button" id="btn-pray-in-modal" class="btn-modal-pray">
+            🙏 함께 지성으로 합장 축원하기 (+500원)
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- [모달 3] 사찰 불사(증축) 단계 및 가족 현황 -->
+    <div id="modal-temple-build" class="modal-backdrop">
+      <div class="modal-sheet">
+        <div class="modal-header">
+          <h3>🏯 우리 가족 사찰 증축(불사) 현황</h3>
+          <button type="button" class="btn-close-modal" data-close-modal="modal-temple-build">✕</button>
+        </div>
+        <div class="modal-body">
+          <h4 style="font-size:0.88rem; color:#3e2723;">🙏 함께 기도하는 우리 가족 명단</h4>
+          <div id="family-members-ranking" style="display:flex; flex-direction:column; gap:6px; margin-bottom:10px;"></div>
+
+          <h4 style="font-size:0.88rem; color:#3e2723;">🪷 사찰 증축 5단계 로드맵</h4>
+          <div id="temple-levels-roadmap" style="display:flex; flex-direction:column; gap:8px;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- [모달 3.5] 삼성각(三聖閣) 산신·칠성·독성 무병장수 축원 모달 -->
+    <div id="modal-samseonggak" class="modal-backdrop">
+      <div class="modal-sheet">
+        <div class="modal-header">
+          <h3>⛰️ 연화사 삼성각 (三聖閣)</h3>
+          <button type="button" class="btn-close-modal" data-close-modal="modal-samseonggak">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="samseonggak-card">
+            <div class="samseonggak-badge">📿 산신령님 · 치성광여래 칠성부처님 · 독성 나반존자</div>
+            <h4>가족의 무병장수와 가내 평안을 수호하는 영험한 전각</h4>
+            <p>
+              삼성각은 예로부터 우리 부모님들이 가족들의 <strong>건강 장수와 무병무탈, 자손의 번창과 소원 성취</strong>를 위해 
+              가장 정성스레 기도드리던 한국 고유의 자비로운 전각입니다.
+            </p>
+          </div>
+
+          <div class="samseonggak-actions-list">
+            <!-- 1. 무병장수 촛불 공양 -->
+            <div class="samseonggak-action-item">
+              <div class="action-info">
+                <div class="action-title">🕯️ 가족 무병장수 촛불 공양</div>
+                <div class="action-desc">산신님 전에 맑은 촛불을 밝혀 가족의 액난을 막고 수명장수를 발원합니다. (보시금 -2,000원 / 불사 +10점)</div>
+              </div>
+              <button type="button" id="btn-samseonggak-candle" class="btn-samseonggak-act">
+                촛불 켜기
+              </button>
+            </div>
+
+            <!-- 2. 산신령님 백년건강 축원 -->
+            <div class="samseonggak-action-item">
+              <div class="action-info">
+                <div class="action-title">🐯 산신령님 만수무강 축원</div>
+                <div class="action-desc">영험한 백호와 백발의 산신령님께 부모님의 만수무강을 지성으로 예배합니다. (공덕 +5점)</div>
+              </div>
+              <button type="button" id="btn-samseonggak-sanshin" class="btn-samseonggak-act">
+                지성 축원
+              </button>
+            </div>
+
+            <!-- 3. 칠성부처님 자손길상 축원 -->
+            <div class="samseonggak-action-item">
+              <div class="action-info">
+                <div class="action-title">⭐ 칠성부처님 자손길상 발원</div>
+                <div class="action-desc">하늘의 북두칠성 치성광여래 부처님께 자손들의 학업과 앞길의 지혜를 구합니다. (공덕 +5점)</div>
+              </div>
+              <button type="button" id="btn-samseonggak-chilseong" class="btn-samseonggak-act">
+                지성 축원
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- [모달 4] 24시간 오픈 공유 & 클라우드 설정 -->
+    <div id="modal-settings" class="modal-backdrop">
+      <div class="modal-sheet">
+        <div class="modal-header">
+          <h3>⚙️ 24시간 가족 오픈 공유 설정</h3>
+          <button type="button" class="btn-close-modal" data-close-modal="modal-settings">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="settings-guide-card">
+            <h4>📱 부모님과 24시간 스마트폰으로 공유하는 방법</h4>
+            <p>1. 이 사찰 웹앱은 <strong>GitHub Pages 또는 Vercel</strong>에 무료로 업로드하시면 24시간 켜져 있는 나만의 인터넷 주소(예: <code>https://my-temple.vercel.app</code>)가 생성됩니다.</p>
+            <p>2. 부모님 스마트폰 카카오톡으로 주소를 보내드린 뒤, 브라우저 메뉴에서 <strong>[홈 화면에 추가]</strong>를 누르시면 진짜 앱처럼 설치되어 언제든 터치 한 번으로 들어오실 수 있습니다.</p>
+            <p>3. 가족들이 서로 다른 집에서 <strong>실시간으로 같은 연등과 사찰 포인트</strong>를 공유하려면 아래 무료 Supabase 연동 키를 입력해 주시면 됩니다. (비워둘 시 기기별 보존)</p>
+          </div>
+
+          <form id="settings-form" style="display:flex; flex-direction:column; gap:10px;">
+            <div class="form-group" style="margin:0;">
+              <label for="setting-temple-name">사찰 이름 (도량 명칭)</label>
+              <input type="text" id="setting-temple-name" placeholder="예: 연화사(蓮華寺)" />
+            </div>
+
+            <div class="form-group" style="margin:0;">
+              <label for="setting-gemini-key">Gemini API Key (선택 - 실시간 AI 스님 대화)</label>
+              <input type="password" id="setting-gemini-key" placeholder="비워두면 내장 지혜 법문 엔진 작동" />
+            </div>
+
+            <div class="form-group" style="margin:0;">
+              <label for="setting-supabase-url">Supabase URL (선택 - 24시간 가족 실시간 DB)</label>
+              <input type="text" id="setting-supabase-url" placeholder="https://xxxx.supabase.co" />
+            </div>
+
+            <div class="form-group" style="margin:0;">
+              <label for="setting-supabase-key">Supabase Anon Key (선택)</label>
+              <input type="password" id="setting-supabase-key" placeholder="eyJhbGciOi..." />
+            </div>
+
+            <button type="submit" class="btn-login-submit" style="margin-top:6px;">
+              설정 저장 및 동기화
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- 토스트 알림 -->
+    <div id="temple-toast" class="temple-toast"></div>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/monk-ai.js"></script>
+  <script src="js/graphics.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
